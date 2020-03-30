@@ -80,16 +80,28 @@ class CloudAccessManager:
 
         return resp.json()['data']
 
-    def machine_add_existing(self, name, project_id, zone, deployment):
-        machine_details = {
-            'provider':    'gcp',
-            'machineName':  name,
-            'deploymentId': deployment['deploymentId'],
-            'projectId':    project_id,
-            'zone':         zone,
-            'active':       True,
-            'managed':      True,
-        }
+    def machine_add_existing(self, provider, name, deployment, project_id=None, zone=None):
+        machine_details = None
+
+        if provider == 'gcp':
+            machine_details = {
+                'provider':     'gcp',
+                'machineName':  name,
+                'deploymentId': deployment['deploymentId'],
+                'projectId':    project_id,
+                'zone':         zone,
+                'active':       True,
+                'managed':      True,
+            }
+
+        elif provider == 'aws':
+            machine_details = {
+                'provider':     'onprem',
+                'machineName':  name,
+                'deploymentId': deployment['deploymentId'],
+                'active':       True,
+                'managed':      True,
+            }
 
         resp = requests.post(
             self.url + '/api/v1/machines',

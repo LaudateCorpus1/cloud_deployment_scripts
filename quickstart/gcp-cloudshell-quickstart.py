@@ -549,10 +549,11 @@ if __name__ == '__main__':
             hostname = '{}-{}'.format(t, i)
             print('Adding "{}" to Cloud Access Manager...'.format(hostname))
             mycam.machine_add_existing(
+                'gcp',
                 hostname,
+                deployment,
                 PROJECT_ID,
-                'us-west2-b',
-                deployment
+                'us-west2-b'
             )
 
     # Loop until Administrator user is found in CAM
