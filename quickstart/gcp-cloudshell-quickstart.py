@@ -231,7 +231,7 @@ def ensure_terraform():
         f'Proceed to download and install Terraform in {TERRAFORM_BIN_DIR} (y/n)? ').strip().lower()
 
     if install_permission not in ('y', 'yes'):
-        print('Terraform is required for deployment. Exiting...')
+        print('Terraform is required for deployment. Exiting...\n')
         sys.exit(1)
 
     install_cmd = f'{sys.executable} install-terraform.py {TERRAFORM_BIN_DIR}'
@@ -276,7 +276,7 @@ def ad_password_get():
             print('')
             break
 
-        print('The passwords do not match.  Please try again.')
+        print('The passwords do not match. Please try again.')
 
     return password1
 
@@ -384,7 +384,7 @@ def tf_vars_create(ref_file_path, tfvar_file_path, settings):
     if os.path.exists(tfvar_file_path):
         overwrite = input("Found an existing .tfvar file, overwrite (y/n)? ").strip().lower()
         if overwrite not in ('y', 'yes'):
-            print('{} already exists. Exiting...'.format(tfvar_file_path))
+            print(f'{tfvar_file_path} already exist. Exiting...')
             sys.exit(1)
 
     with open(ref_file_path, 'r') as ref_file, open(tfvar_file_path, 'w') as out_file:

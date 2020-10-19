@@ -81,8 +81,6 @@ class CloudAccessManager:
         return resp.json()['data']
 
     def machine_add_existing(self, provider, name, deployment, project_id=None, zone=None):
-        machine_details = None
-
         if provider == 'gcp':
             machine_details = {
                 'provider':     'gcp',

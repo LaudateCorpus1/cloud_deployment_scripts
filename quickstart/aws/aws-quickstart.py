@@ -13,6 +13,7 @@ import json
 import os
 import re
 import shutil
+import site
 import subprocess
 import sys
 import textwrap
@@ -116,7 +117,6 @@ def ensure_required_packages():
                 packages_to_install_list.append(package)
 
     if packages_to_install_list:
-        print(packages_to_install_list)
         # Convert the list to a string of packages delimited by a space
         packages_to_install = " ".join(packages_to_install_list)
         install_cmd = f'{sys.executable} -m pip install --upgrade {packages_to_install} --user'
@@ -133,6 +133,9 @@ def ensure_required_packages():
             sys.exit(1)
 
         subprocess.check_call(install_cmd.split(' '))
+
+        # Refresh sys.path to detect new modules in user's home directory.
+        importlib.reload(site)
 
 
 def import_modules():
@@ -221,7 +224,7 @@ def ensure_aws_cli():
 
     #TODO Add install-aws-cli.py script similar to install-terraform.py if AWS CLI is not installed.
 
-    print('AWS CLI credentials is required for deployment. Exiting...\n')
+    print('AWS CLI not found. Please install and try again. Exiting...\n')
     sys.exit(1)
 
 
@@ -283,7 +286,7 @@ def ad_password_get():
 
     See: https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/password-must-meet-complexity-requirements
     '''
-    print(txt)
+    print(textwrap.dedent(txt))
     while True:
         password1 = getpass.getpass('Enter a password: ').strip()
         password2 = getpass.getpass('Re-enter the password: ').strip()
@@ -472,7 +475,7 @@ def iam_policy_attach(policy_arn, iam_user):
 def tf_vars_create(ref_file_path, tfvar_file_path, settings):
 
     if os.path.exists(tfvar_file_path):
-        overwrite = input("Found an existing .tfvar file, overwrite (y/n)?").strip().lower()
+        overwrite = input("Found an existing .tfvar file, overwrite (y/n)? ").strip().lower()
         if overwrite not in ('y', 'yes'):
             print(f'{tfvar_file_path} already exist. Exiting...')
             sys.exit(1)
@@ -561,11 +564,11 @@ if __name__ == '__main__':
     print('AWS setup complete.\n')
 
     print('Setting Cloud Access Manager...')
-    #TODO: Use aws for power management instead of onprem in CAM
     mycam = cam.CloudAccessManager(cfg_data.get('api_token'))
 
     print(f'Creating deployment {DEPLOYMENT_NAME}...')
     deployment = mycam.deployment_create(DEPLOYMENT_NAME, cfg_data.get('reg_code'))
+    #TODO: Use aws for power management instead of onprem in CAM
 
     print('Creating CAM API key...')
     cam_deployment_key = mycam.deployment_key_create(deployment)
